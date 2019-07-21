@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relativeLayoutMain"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/gradient"
+
+    tools:context=".MainActivity">
+
+           <RelativeLayout
+               android:layout_width="wrap_content"
+               android:layout_height="match_parent"
+               android:layout_above="@id/linearLayoutInput"
+               android:layout_centerInParent="true"
+               android:layout_marginBottom="10dp"
+               android:gravity="center">
+               <!--
+
+               <ProgressBar
+                   android:id="@+id/progressbar"
+                   android:backgroundTint="@color/colorPrimary"
+                   android:layout_width="350dp"
+                   android:layout_height="350dp" / >-->
+
+               <TextView
+                   android:id="@+id/textViewTotalAmount"
+                   android:layout_width="200dp"
+                   android:layout_height="60dp"
+                   android:layout_below="@+id/donutProgress"
+                   android:layout_centerInParent="true"
+                   android:gravity="center"
+                   android:text="$0.00"
+                   android:textAlignment="center"
+                   android:textColor="@android:color/white"
+                   android:textSize="30dp"
+                   android:textStyle="bold" />
+
+
+               <com.github.lzyzsd.circleprogress.DonutProgress
+                   android:id="@+id/donutProgress"
+                   donut_unfinished_color="@color/colorRed"
+                   android:layout_width="300dp"
+                   android:layout_height="300dp"
+                   android:layout_centerInParent="true" />
+
+           </RelativeLayout>
+           <Button
+               android:textStyle="bold"
+               android:textColor="@android:color/white"
+               android:layout_margin="10dp"
+               android:background="@drawable/custom_rount_button"
+               android:id="@+id/buttonAddAmount"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_alignParentBottom="true"
+               android:layout_marginTop="10dp"
+               android:layout_marginBottom="4dp"
+               android:elevation="10dp"
+               android:text="Submit" />
+           <LinearLayout
+               android:id="@+id/linearLayoutInput"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_above="@+id/buttonAddAmount"
+               android:layout_marginBottom="5dp">
+
+               <Spinner
+                   android:id="@+id/spinnerCatagory"
+                   android:layout_width="82dp"
+                   android:layout_height="wrap_content"
+                   android:layout_alignStart="@+id/linearLayoutInput"
+                   android:layout_gravity="center" />
+
+               <EditText
+                   android:id="@+id/editTextDescription"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_margin="1dp"
+                   android:hint="Description"
+                   android:inputType=""
+                   android:textAlignment="center"
+                   android:textColor="@android:color/white" />
+
+               <EditText
+                   android:id="@+id/editTextAmount"
+                   android:layout_width="82dp"
+                   android:layout_height="wrap_content"
+                   android:layout_margin="1dp"
+                   android:hint="Amount"
+                   android:inputType="numberDecimal"
+                   android:textAlignment="center"
+                   android:textColor="@android:color/white" />
+
+               <Spinner
+                   android:id="@+id/spinnerAmountType"
+                   android:layout_width="123dp"
+                   android:layout_height="wrap_content"
+                   android:layout_alignEnd="@+id/linearLayoutInput"
+                   android:layout_gravity="center"
+                   android:layout_margin="1dp" />
+
+           </LinearLayout>
+</RelativeLayout>
