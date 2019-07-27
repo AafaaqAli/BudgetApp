@@ -1,17 +1,13 @@
 package com.example.budgetapp;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
-import android.text.Layout;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -21,14 +17,11 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
 import com.github.lzyzsd.circleprogress.DonutProgress;
-import com.google.android.gms.ads.MobileAds;
 
 import in.championswimmer.sfg.lib.SimpleFingerGestures;
 
@@ -49,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private String[] type = {"Saving", "Expense"};
     private SimpleFingerGestures gesture = new SimpleFingerGestures();
 
-    private SQLiteDatabase sqLiteDatabase;
-    private DBHelper dbHelper;
+    //private SQLiteDatabase sqLiteDatabase;
+   // private DBHelper dbHelper;
 
 
-    Stats tempClassStats;
+    Stat tempClassStats;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        dbHelper = new DBHelper(MainActivity.this, null);
-        sqLiteDatabase = dbHelper.getWritableDatabase();
+       // dbHelper = new DBHelper(MainActivity.this, null);
+       // sqLiteDatabase = dbHelper.getWritableDatabase();
 
         //connecting widgets by id
         editTextAmount = findViewById(R.id.editTextAmount);
@@ -134,95 +127,105 @@ public class MainActivity extends AppCompatActivity {
             @SuppressLint("ResourceAsColor")
             @Override
             public void onClick(View v) {
-                if (!editTextAmount.getText().toString().isEmpty()) {
-                    //Cast Input to Float
-                    inputAmount = Float.parseFloat(editTextAmount.getText().toString());
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!editTextAmount.getText().toString().isEmpty()) {
+                            //Cast Input to Float
+                            inputAmount = Float.parseFloat(editTextAmount.getText().toString());
 
-                    switch (amountType) {
-                        case 0:
-                            //saving
-                            if (totalAmount < 0) {
-                                if (totalAmount + inputAmount > 0) {
-                                    totalPercentage = 100;
-                                } else {
-                                    totalPercentage = 0;
-                                }
-
-                            } else {
-                                if (inputAmount > totalAmount) {
-                                    totalPercentage = 100;
-                                } else if (inputAmount < totalAmount) {
-                                    if(totalAmount == highestAmount){
-                                        currentPercentage = 0;
-                                    }else{
-                                        currentPercentage = ((int) (inputAmount / highestAmount * 100));
-                                    }
-                                    if (totalPercentage < 100) {
-                                        if (currentPercentage + totalPercentage > 100) {
+                            switch (amountType) {
+                                case 0:
+                                    //saving
+                                    if (totalAmount < 0) {
+                                        if (totalAmount + inputAmount > 0) {
                                             totalPercentage = 100;
                                         } else {
-                                            totalPercentage += currentPercentage;
+                                            totalPercentage = 0;
                                         }
+
                                     } else {
-                                        totalPercentage = 100;
+                                        if (inputAmount > totalAmount) {
+                                            totalPercentage = 100;
+                                        } else if (inputAmount < totalAmount) {
+                                            if(totalAmount == highestAmount){
+                                                currentPercentage = 0;
+                                            }else{
+                                                currentPercentage = ((int) (inputAmount / highestAmount * 100));
+                                            }
+                                            if (totalPercentage < 100) {
+                                                if (currentPercentage + totalPercentage > 100) {
+                                                    totalPercentage = 100;
+                                                } else {
+                                                    totalPercentage += currentPercentage;
+                                                }
+                                            } else {
+                                                totalPercentage = 100;
+                                            }
+                                        } else if (totalAmount == 0 || totalAmount < 0) {
+                                            totalPercentage = 0;
+                                        }
                                     }
-                                } else if (totalAmount == 0 || totalAmount < 0) {
-                                    totalPercentage = 0;
-                                }
+                                    totalPercentage = Math.round(totalPercentage);
+
+                                    //Setting Description
+                                    if (!editTextDescription.getText().toString().isEmpty()) {
+                                        description = (editTextDescription.getText().toString());
+                                    } else {
+                                        Date currentTime = Calendar.getInstance().getTime();
+                                        description = (String.valueOf(currentTime).toUpperCase());
+                                    }
+                                    ///sending data
+                                    percentage = String.valueOf((currentPercentage));
+                                    amount = (String.format("+%s", String.valueOf(inputAmount)));
+                                    imageResource = (R.drawable.ic_add);
+
+
+                                    totalAmount += inputAmount;
+                                    highestAmount = totalAmount;
+                                    break;
+
+                                case 1:
+                                    //expense
+                                    progress.setUnfinishedStrokeColor(R.color.colorRed);
+
+                                    if (totalAmount - inputAmount > 0) {
+                                        totalPercentage = (((totalAmount - inputAmount) / highestAmount) * 100);
+                                        currentPercentage = inputAmount / highestAmount * 100;
+                                    } else if (totalAmount - inputAmount == 0) {
+                                        totalPercentage = 0;
+
+                                    } else {
+                                        totalPercentage = 0;
+                                    }
+
+
+                                    if (!editTextDescription.getText().toString().isEmpty()) {
+                                        description = (editTextDescription.getText().toString());
+                                    } else {
+                                        Date currentTime = Calendar.getInstance().getTime();
+                                        description = (String.valueOf(currentTime).toUpperCase());
+                                    }
+                                    ///sending data into tempClass and later save into array list
+                                    percentage = String.valueOf(((currentPercentage)));
+                                    amount = (String.format("-%s", String.valueOf(inputAmount)));
+
+                                    totalAmount -= inputAmount;
+                                    totalPercentage = Math.round(totalPercentage);
+                                    break;
                             }
-                            totalPercentage = Math.round(totalPercentage);
-
-                            //Setting Description
-                            if (!editTextDescription.getText().toString().isEmpty()) {
-                                description = (editTextDescription.getText().toString());
-                            } else {
-                                Date currentTime = Calendar.getInstance().getTime();
-                                description = (String.valueOf(currentTime).toUpperCase());
-                            }
-                            ///sending data
-                            percentage = String.valueOf((currentPercentage));
-                            amount = (String.format("+%s", String.valueOf(inputAmount)));
-                            imageResource = (R.drawable.ic_add);
-
-
-                            totalAmount += inputAmount;
-                            highestAmount = totalAmount;
-                            break;
-
-                        case 1:
-                            //expense
-                            progress.setUnfinishedStrokeColor(R.color.colorRed);
-
-                            if (totalAmount - inputAmount > 0) {
-                                totalPercentage = (((totalAmount - inputAmount) / highestAmount) * 100);
-                                currentPercentage = inputAmount / highestAmount * 100;
-                            } else if (totalAmount - inputAmount == 0) {
-                                totalPercentage = 0;
-
-                            } else {
-                                totalPercentage = 0;
-                            }
-
-
-                            if (!editTextDescription.getText().toString().isEmpty()) {
-                                description = (editTextDescription.getText().toString());
-                            } else {
-                                Date currentTime = Calendar.getInstance().getTime();
-                                description = (String.valueOf(currentTime).toUpperCase());
-                            }
-                            ///sending data into tempClass and later save into array list
-                            percentage = String.valueOf(((currentPercentage)));
-                            amount = (String.format("-%s", String.valueOf(inputAmount)));
-
-                            totalAmount -= inputAmount;
-                            totalPercentage = Math.round(totalPercentage);
-                            break;
+                        }
                     }
-                }
+                });
                 if (!editTextAmount.getText().toString().isEmpty()) {
-                    tempClassStats = new Stats(categoryIcon[categoryPosition], description, amount, percentage);
+                    //tempClassStats = new Stat();
                     //empty Position
-                    dbHelper.setTransaction(tempClassStats);
+                    //dbHelper.setTransaction(tempClassStats);
+
+
+                    //roomDatabase
+                    StatsRepo statsRepo = new StatsRepo(getApplicationContext());
+                    statsRepo.insertCurrentStat(categoryIcon[categoryPosition], description, amount, percentage);
                 }
 
 
@@ -336,12 +339,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         setDataOnApplicationEnd();
-        dbHelper.close();
+        //dbHelper.close();
     }
     @Override
     protected void onPause() {
         super.onPause();
-        dbHelper.close();
+        //dbHelper.close();
     }
 
     @Override

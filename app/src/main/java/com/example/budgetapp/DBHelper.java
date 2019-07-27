@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -30,9 +29,9 @@ public class DBHelper extends SQLiteOpenHelper {
             + COLUMN_PERCENTAGE + " TEXT NOT NULL" + ");";
     private final static String querySelectTable = "SELECT * FROM " + TABLE_NAME + " WHERE 1";
 
-    private Stats stats;
-    private ArrayList<Stats> mStatsArrayList = new ArrayList<Stats>();
-    private ArrayList<Stats> mTempStatsArrayList = new ArrayList<Stats>();
+    private Stat stats;
+    private ArrayList<Stat> mStatsArrayList = new ArrayList<Stat>();
+    private ArrayList<Stat> mTempStatsArrayList = new ArrayList<Stat>();
 
     DBHelper(Context context, SQLiteDatabase.CursorFactory factory) {
         super(context, DB_NAME, factory, DB_VERSION);
@@ -48,7 +47,7 @@ public class DBHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
-    public void setTransaction(Stats mStats) {
+    public void setTransaction(Stat mStats) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(COLUMN_IMG_RESOURCE, mStats.getImageResource());
         contentValues.put(COLUMN_DESCRIPTION, mStats.getDescription());
@@ -58,7 +57,7 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.insert(TABLE_NAME, null, contentValues);
     }
-    public ArrayList<Stats> getTransactions() {
+    public ArrayList<Stat> getTransactions() {
 
         int imgResource;
         String description;
@@ -74,11 +73,11 @@ public class DBHelper extends SQLiteOpenHelper {
             amount = cursor.getString(cursor.getColumnIndex(COLUMN_AMOUNT));
             percentage = cursor.getString(cursor.getColumnIndex(COLUMN_PERCENTAGE));
 
-            mStatsArrayList.add(stats = new Stats(imgResource, description, amount, percentage));
+            mStatsArrayList.add(stats = new Stat(imgResource, description, amount, percentage));
         }
         return mStatsArrayList;
     }
-    public void createUpdatedTransactionTable(ArrayList<Stats> tempStatsArrayList) {
+    public void createUpdatedTransactionTable(ArrayList<Stat> tempStatsArrayList) {
         mStatsArrayList = tempStatsArrayList;
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -95,7 +94,7 @@ public class DBHelper extends SQLiteOpenHelper {
             db.insert(TABLE_NAME, null, contentValues);
         }
     }
-    public void updateTransactionTable(int itemPosition, Stats tempStats) {
+    public void updateTransactionTable(int itemPosition, Stat tempStats) {
         mStatsArrayList.set(itemPosition, tempStats);
 
         createUpdatedTransactionTable(mStatsArrayList);

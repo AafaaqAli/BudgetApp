@@ -1,6 +1,5 @@
 package com.example.budgetapp;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -25,13 +24,13 @@ public class EditDataActivity extends AppCompatActivity {
     private Spinner spinnerAmountType, spinnerCategory;
     private Button buttonSubmitEdit;
     private EditText editTextDescription, editTextAmount;
-    Stats tempStats;
+    Stat tempStats;
 
     private SQLiteDatabase sqLiteDatabase;
     private DBHelper dbHelper;
 
 
-    private ArrayList<Stats> tempArrayListStats = new ArrayList<Stats>();
+    private ArrayList<Stat> tempArrayListStats = new ArrayList<Stat>();
 
     private int categoryPosition = 0;
     private int[] categoryIcon = {R.drawable.ic_add, R.drawable.ic_shoping, R.drawable.ic_restaurant, R.drawable.ic_bus,
@@ -39,14 +38,10 @@ public class EditDataActivity extends AppCompatActivity {
     private int imageResource;
     private String[] type = {"Saving", "Expense"};
 
-    private float totalPercentage = 0, currentPercentage = 0, totalAmount = 0, inputAmount = 0, highestAmount = 0;
+    private float totalPercentage = 0, currentPercentage = 0, totalAmount = 0, inputAmount = 0, highestAmount = 0, updatedAmount = 0;
     private String mCurrentAmount;
-    public String description, amount, percentage;
-    private float currentItemAmount;
+    public String description, amount;
     String amountTypeSign;
-
-
-    private float updatedAmount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +49,9 @@ public class EditDataActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_data);
 
         getDataOnApplicationStart();
+
+        dbHelper = new DBHelper(EditDataActivity.this, null);
+        sqLiteDatabase = dbHelper.getWritableDatabase();
 
 
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item, type);
@@ -113,8 +111,14 @@ public class EditDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 int itemPosition = getIntent().getIntExtra("itemPosition", -1);
+
                 tempArrayListStats = dbHelper.getTransactions();
-                updatedAmount = Float.parseFloat(editTextAmount.getText().toString());
+                if(!editTextAmount.getText().toString().isEmpty()){
+                    updatedAmount = Float.parseFloat(editTextAmount.getText().toString());    
+                }else{
+                    Toast.makeText(EditDataActivity.this, "Amount Field is Empty", Toast.LENGTH_SHORT).show();
+                }
+                
                 inputAmount = Float.parseFloat(tempArrayListStats.get(itemPosition).getAmount());
 
 
@@ -250,6 +254,8 @@ public class EditDataActivity extends AppCompatActivity {
                     description = editTextDescription.getText().toString();
                     amount = editTextAmount.getText().toString();
 
+
+
                 } else {
 
 
@@ -269,12 +275,13 @@ public class EditDataActivity extends AppCompatActivity {
                     amountTypeSign = "-";
                 }
 
-                tempStats = new Stats(categoryIcon[categoryPosition], description, (amountTypeSign + updatedAmount), String.valueOf(currentPercentage));
-                dbHelper.updateTransactionTable(itemPosition, tempStats);
-                setDataOnApplicationEnd();
-                finish();
-
-
+                if(!editTextAmount.getText().toString().isEmpty()){
+                    dbHelper.updateTransactionTable(itemPosition, tempStats);
+                    setDataOnApplicationEnd();
+                    finish();
+                }else{
+                    Toast.makeText(EditDataActivity.this, "Amount Field is Empty!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }

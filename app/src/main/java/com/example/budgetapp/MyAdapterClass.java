@@ -11,7 +11,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class MyAdapterClass extends RecyclerView.Adapter<MyAdapterClass.MyViewHolder> {
-    private ArrayList<Stats> arrayListStats = new ArrayList<Stats>();
+    private ArrayList<Stat> arrayListStats = new ArrayList<Stat>();
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {
@@ -55,7 +55,7 @@ public class MyAdapterClass extends RecyclerView.Adapter<MyAdapterClass.MyViewHo
     MyAdapterClass() {
     }
 
-    MyAdapterClass(ArrayList<Stats> mArrayListStats) {
+    MyAdapterClass(ArrayList<Stat> mArrayListStats) {
         this.arrayListStats = mArrayListStats;
     }
 
@@ -69,7 +69,7 @@ public class MyAdapterClass extends RecyclerView.Adapter<MyAdapterClass.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int position) {
-        Stats currentItem = arrayListStats.get(position);
+        Stat currentItem = arrayListStats.get(position);
         myViewHolder.mImageView.setImageResource(currentItem.getImageResource());
         myViewHolder.mTextViewDescription.setText(currentItem.getDescription());
         myViewHolder.mTextViewPercentage.setText(currentItem.getPercentage());

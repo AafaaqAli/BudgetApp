@@ -3,15 +3,14 @@ package com.example.budgetapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.nikhilpanju.recyclerviewenhanced.RecyclerTouchListener;
 import com.r0adkll.slidr.Slidr;
 
@@ -26,7 +25,9 @@ public class HistoryActivity extends AppCompatActivity {
     public RecyclerView mRecyclerView;
     public MyAdapterClass mAdapter;
     public RecyclerView.LayoutManager mLayoutManager;
-    ArrayList<Stats> mStatsArrayList = new ArrayList<Stats>();
+
+    ArrayList<Stat> mStatsArrayList = new ArrayList<Stat>();
+
     RecyclerTouchListener onTouchListener;
     SimpleFingerGestures gesture = new SimpleFingerGestures();
 
@@ -38,13 +39,14 @@ public class HistoryActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        MobileAds.initialize(this, "ca-app-pub-4103825165316777~4034753902");
+        ///MobileAds.initialize(this, "ca-app-pub-4103825165316777~4034753902");
+       /// mAdView = findViewById(R.id.adView);
+       /// AdRequest adRequest = new AdRequest.Builder().build();
+        ///mAdView.loadAd(adRequest);
 
-
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
         mRecyclerView = findViewById(R.id.recyclerViewHistory);
+
+
 
         dbHelper = new DBHelper(HistoryActivity.this, null);
         sqLiteDatabase = dbHelper.getWritableDatabase();
@@ -52,7 +54,6 @@ public class HistoryActivity extends AppCompatActivity {
         mStatsArrayList = dbHelper.getTransactions();
 
         mAdapter = new MyAdapterClass(mStatsArrayList);
-
 
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mAdapter);
